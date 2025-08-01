@@ -266,13 +266,12 @@ export default function RoundCounterPage() {
           <CardTitle className="text-4xl font-headline text-primary">
             "jAi  Hanuman" Round Counter
           </CardTitle>
-          <div className="relative mx-auto w-full max-w-[200px] h-48 my-4">
+          <div className="relative mx-auto my-4 h-48 w-48">
             <Image
               src="https://i.pinimg.com/736x/ee/36/53/ee36537f687417770859a7448a335754.jpg"
               alt="Lord Hanuman"
               fill
-              style={{objectFit: "contain"}}
-              className="rounded-md"
+              className="rounded-md object-contain"
               data-ai-hint="hanuman portrait"
             />
           </div>
@@ -299,5 +298,3 @@ export default function RoundCounterPage() {
     </main>
   );
 }
-
-    
