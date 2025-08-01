@@ -35,9 +35,7 @@ export default function RoundCounterPage() {
     const updateCount = async () => {
       try {
         const count = await incrementVisitorCount();
-        if (count > 0) {
-          setVisitorCount(count);
-        }
+        setVisitorCount(count);
       } catch (error) {
         console.error("Failed to update visitor count:", error);
       }
