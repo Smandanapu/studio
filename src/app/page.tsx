@@ -59,7 +59,7 @@ export default function RoundCounterPage() {
       setIsCounting(false);
       // Use browser's built-in speech synthesis
       if (typeof window !== 'undefined' && window.speechSynthesis) {
-        const utterance = new SpeechSynthesisUtterance('your goal is reached');
+        const utterance = new SpeechSynthesisUtterance('Jai hanuman your goal is reached');
         window.speechSynthesis.speak(utterance);
       }
     }
