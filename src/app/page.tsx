@@ -12,8 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Play, Repeat, Trophy, Timer, Hourglass, Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Play, Repeat, Trophy, Timer, Hourglass } from 'lucide-react';
 
 export default function RoundCounterPage() {
   const [totalRounds, setTotalRounds] = useState(0);
@@ -58,6 +57,11 @@ export default function RoundCounterPage() {
   useEffect(() => {
     if (hasReachedGoal) {
       setIsCounting(false);
+      // Use browser's built-in speech synthesis
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        const utterance = new SpeechSynthesisUtterance('your goal is reached');
+        window.speechSynthesis.speak(utterance);
+      }
     }
   }, [hasReachedGoal]);
 
@@ -149,7 +153,7 @@ export default function RoundCounterPage() {
         
         {roundDuration && (
             <p className="text-sm text-muted-foreground">
-                your devotional time for each round: {(roundDuration / 1000).toFixed(2)} seconds.
+                Your devotional time for each round: {(roundDuration / 1000).toFixed(2)} seconds.
             </p>
         )}
 
@@ -157,8 +161,8 @@ export default function RoundCounterPage() {
           <div className="flex animate-in fade-in-50 items-center gap-3 rounded-lg border-2 border-accent bg-accent/10 p-4 text-accent">
             <Trophy className="h-8 w-8" />
             <div className="flex flex-col text-center">
+              <p className="font-semibold">Goal Reached!</p>
               <p className="text-sm">“Tvamasmin Kārya Niryoge Pramānam Hari Sattama Hanuman Yatna Māsthāya Dukha Kshaya Karo Bhava”</p>
-              <p className="text-sm mt-2">“Tvamasmin Kārya Niryoge Pramānam Hari Sattama Rāghavastvatsamārambhāt Mayi Yatnaparo Bhavet”</p>
             </div>
           </div>
         )}
