@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Play, Repeat, Trophy, Timer, Hourglass } from 'lucide-react';
+import { Play, Repeat, Trophy, Timer, Hourglass, Loader2 } from 'lucide-react';
 import { textToSpeech } from '@/ai/flows/tts-flow';
 
 
@@ -21,6 +21,7 @@ export default function RoundCounterPage() {
   const [desiredRounds, setDesiredRounds] = useState('10');
   const [isCounting, setIsCounting] = useState(false);
   const [isCalibrating, setIsCalibrating] = useState(false);
+  const [isPreparingAudio, setIsPreparingAudio] = useState(false);
   const [calibrationStartTime, setCalibrationStartTime] = useState<number | null>(null);
   const [roundDuration, setRoundDuration] = useState<number | null>(null);
   const [goalReachedAudio, setGoalReachedAudio] = useState<HTMLAudioElement | null>(null);
@@ -29,6 +30,32 @@ export default function RoundCounterPage() {
 
   const numericDesiredRounds = parseInt(desiredRounds, 10) || 0;
   const hasReachedGoal = totalRounds > 0 && totalRounds >= numericDesiredRounds;
+
+  useEffect(() => {
+    // Pre-generate the audio when the component mounts or when a new goal is set.
+    // This is a more reliable way to handle browser autoplay policies.
+    const prepareAudio = async () => {
+      if (goalReachedAudio || !desiredRounds) return;
+      setIsPreparingAudio(true);
+      try {
+        const response = await textToSpeech("JAI Hanuman");
+        if (response && response.media) {
+          const audio = new Audio(response.media);
+          setGoalReachedAudio(audio);
+        } else {
+          console.error("Failed to generate audio or get media data.");
+        }
+      } catch (error) {
+        console.error("TTS flow failed:", error);
+      } finally {
+        setIsPreparingAudio(false);
+      }
+    };
+    
+    prepareAudio();
+  // We only want to run this when desiredRounds changes, to avoid re-fetching.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [desiredRounds]);
 
   useEffect(() => {
     return () => {
@@ -58,52 +85,25 @@ export default function RoundCounterPage() {
   }, [isCounting, roundDuration]);
   
   useEffect(() => {
-    if (hasReachedGoal) {
+    if (hasReachedGoal && goalReachedAudio) {
       setIsCounting(false);
       
-      const playAudioRepeatedly = (audio: HTMLAudioElement, times: number) => {
-        if (times <= 0) return;
-        
-        let playedCount = 0;
-        const playNext = () => {
-            playedCount++;
-            if (playedCount < times) {
-                audio.currentTime = 0;
-                audio.play().catch(e => {
-                    console.error("Audio play failed", e);
-                });
-            }
-        };
-
-        const handleEnded = () => {
-            playNext();
-            audio.removeEventListener('ended', handleEnded);
-        };
-        audio.addEventListener('ended', handleEnded);
-        audio.play().catch(e => {
-            console.error("Audio play failed", e);
-            audio.removeEventListener('ended', handleEnded);
-        });
+      let playCount = 0;
+      const playAudio = () => {
+        if (playCount < 3) {
+          goalReachedAudio.currentTime = 0;
+          goalReachedAudio.play().catch(e => console.error("Audio play failed", e));
+          playCount++;
+        } else {
+          goalReachedAudio.removeEventListener('ended', playAudio);
+        }
       };
 
-      if (goalReachedAudio) {
-        playAudioRepeatedly(goalReachedAudio, 3);
-      } else {
-        textToSpeech("JAI Hanuman").then(response => {
-           if (response && response.media) {
-             const audio = new Audio(response.media);
-             setGoalReachedAudio(audio);
-             playAudioRepeatedly(audio, 3);
-           } else {
-             console.error("Failed to generate audio or get media data.");
-           }
-        }).catch(error => {
-          console.error("TTS flow failed:", error);
-        });
-      }
+      goalReachedAudio.addEventListener('ended', playAudio);
+      playAudio(); // Start the first play
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasReachedGoal]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasReachedGoal, goalReachedAudio]);
 
   const handleCalibration = () => {
     if (!isCalibrating) {
@@ -114,8 +114,8 @@ export default function RoundCounterPage() {
       // Stop calibration
       if (calibrationStartTime) {
         const duration = Date.now() - calibrationStartTime;
-        setRoundDuration(duration + 10000);
-        setTotalRounds(1);
+        setRoundDuration(duration); // Remove the extra 10 seconds
+        setTotalRounds(1); // Count calibration as 1 round
       }
       setIsCalibrating(false);
       setCalibrationStartTime(null);
@@ -221,15 +221,21 @@ export default function RoundCounterPage() {
           )
       }
 
+      const isStartDisabled = isCounting || hasReachedGoal || isPreparingAudio;
+
       return (
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
           <Button
             onClick={handleStart}
             className="w-full sm:w-48 transition-colors duration-300"
             size="lg"
-            disabled={isCounting || hasReachedGoal}
+            disabled={isStartDisabled}
           >
-            <Play className="mr-2 h-5 w-5" /> Start Counting
+            {isPreparingAudio ? (
+              <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Preparing...</>
+            ) : (
+              <><Play className="mr-2 h-5 w-5" /> Start Counting</>
+            )}
           </Button>
           <Button onClick={handleReset} variant="outline" size="lg" className="w-full sm:w-48">
             <Repeat className="mr-2 h-5 w-5" /> Reset
