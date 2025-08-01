@@ -39,7 +39,11 @@ export default function RoundCounterPage() {
         const storedCount = localStorage.getItem(FAKE_COUNTER_STORAGE_KEY);
         if (storedCount) {
           const num = parseInt(storedCount, 10);
-          return num >= MAX_COUNT ? INITIAL_COUNT : num;
+          // If the stored number is somehow less than the initial count or past the max, reset it.
+          if (num < INITIAL_COUNT || num >= MAX_COUNT) {
+            return INITIAL_COUNT;
+          }
+          return num;
         }
       } catch (error) {
         console.warn("Could not read from localStorage:", error);
