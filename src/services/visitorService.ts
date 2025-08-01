@@ -1,10 +1,9 @@
 'use server';
 
-import { initializeApp, getApps } from 'firebase/app';
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getFirestore, doc, runTransaction, DocumentData } from 'firebase/firestore';
 
-// This configuration should be filled out in your src/lib/firebase.ts file
-// but we will also define it here as a fallback for the server-side environment.
+// This configuration should be filled out with your actual Firebase project credentials.
 const firebaseConfig = {
   apiKey: 'YOUR_API_KEY',
   authDomain: 'YOUR_AUTH_DOMAIN',
@@ -15,7 +14,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app;
+let app: FirebaseApp;
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
 } else {
@@ -48,7 +47,7 @@ export async function incrementVisitorCount(): Promise<number> {
     });
     return newCount;
   } catch (error) {
-    console.error("Firebase transaction failed:", error);
+    console.error("Firebase transaction failed. Please check your Firebase config and security rules:", error);
     // Return 0 to indicate failure, which the client can handle.
     return 0;
   }
