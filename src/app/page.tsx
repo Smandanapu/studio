@@ -32,10 +32,10 @@ export default function RoundCounterPage() {
   const hasReachedGoal = totalRounds > 0 && totalRounds >= numericDesiredRounds;
 
   useEffect(() => {
-    // Pre-generate the audio when the component mounts or when a new goal is set.
-    // This is a more reliable way to handle browser autoplay policies.
+    // Pre-generate the audio when the component mounts.
+    // This prevents hitting API rate limits by only fetching the audio once.
     const prepareAudio = async () => {
-      if (goalReachedAudio || !desiredRounds) return;
+      if (goalReachedAudio) return; // Don't fetch if we already have it
       setIsPreparingAudio(true);
       try {
         const response = await textToSpeech("JAI Hanuman");
@@ -53,9 +53,9 @@ export default function RoundCounterPage() {
     };
     
     prepareAudio();
-  // We only want to run this when desiredRounds changes, to avoid re-fetching.
+  // We only want to run this once when the component mounts.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [desiredRounds]);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -114,7 +114,7 @@ export default function RoundCounterPage() {
       // Stop calibration
       if (calibrationStartTime) {
         const duration = Date.now() - calibrationStartTime;
-        setRoundDuration(duration); // Remove the extra 10 seconds
+        setRoundDuration(duration);
         setTotalRounds(1); // Count calibration as 1 round
       }
       setIsCalibrating(false);
