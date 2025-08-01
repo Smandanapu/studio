@@ -169,13 +169,13 @@ export default function RoundCounterPage() {
             <CardDescription className="text-base pt-1 mb-4">
               {isCalibrating
                 ? 'Perform one round, then click Stop to set your pace.'
-                : "First, let's calibrate by timing one round."}
+                : "First, let's time one Pradakhsna."}
             </CardDescription>
             <Button onClick={handleCalibration} size="lg" className="w-full sm:w-48">
               {isCalibrating ? (
-                <><Hourglass className="mr-2 h-5 w-5 animate-spin" /> Stop Calibration</>
+                <><Hourglass className="mr-2 h-5 w-5 animate-spin" /> Stop Pradakhsnas</>
               ) : (
-                <><Timer className="mr-2 h-5 w-5" /> Start Calibration</>
+                <><Timer className="mr-2 h-5 w-5" /> Start Pradakhsnas</>
               )}
             </Button>
         </div>
