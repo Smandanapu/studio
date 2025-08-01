@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Play, Square, Repeat, Trophy, Timer, Hourglass } from 'lucide-react';
+import { Play, Repeat, Trophy, Timer, Hourglass } from 'lucide-react';
 import * as Tone from 'tone';
 
 export default function RoundCounterPage() {
@@ -86,8 +86,10 @@ export default function RoundCounterPage() {
     }
   };
 
-  const handleStartStop = () => {
-    setIsCounting(prev => !prev);
+  const handleStart = () => {
+    if (!isCounting) {
+      setIsCounting(true);
+    }
   };
 
   const handleReset = () => {
@@ -186,17 +188,12 @@ export default function RoundCounterPage() {
       return (
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
           <Button
-            onClick={handleStartStop}
+            onClick={handleStart}
             className="w-full sm:w-48 transition-colors duration-300"
             size="lg"
-            disabled={hasReachedGoal && !isCounting}
-            variant={isCounting ? "destructive" : "default"}
+            disabled={isCounting || hasReachedGoal}
           >
-            {isCounting ? (
-              <><Square className="mr-2 h-5 w-5" /> Stop Counting</>
-            ) : (
-              <><Play className="mr-2 h-5 w-5" /> Start Counting</>
-            )}
+            <Play className="mr-2 h-5 w-5" /> Start Counting
           </Button>
           <Button onClick={handleReset} variant="outline" size="lg" className="w-full sm:w-48">
             <Repeat className="mr-2 h-5 w-5" /> Reset
