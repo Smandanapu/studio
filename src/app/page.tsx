@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Play, Repeat, Trophy, Timer, Hourglass, Users } from 'lucide-react';
 
-const FAKE_COUNTER_STORAGE_KEY = 'fakeVisitorCount';
+const FAKE_COUNTER_STORAGE_KEY = 'hanumanVisitorCount_v2'; // Changed key to reset stored value
 const INITIAL_COUNT = 100;
 const MAX_COUNT = 1000000;
 
@@ -33,14 +33,15 @@ export default function RoundCounterPage() {
   const hasReachedGoal = totalRounds > 0 && totalRounds >= numericDesiredRounds;
 
   useEffect(() => {
-    // Initialize and update the fake visitor counter
+    // This function now runs only on the client-side
     const getInitialVisitorCount = () => {
       try {
         const storedCount = localStorage.getItem(FAKE_COUNTER_STORAGE_KEY);
         if (storedCount) {
           const num = parseInt(storedCount, 10);
-          // If the stored number is somehow less than the initial count or past the max, reset it.
-          if (isNaN(num) || num < INITIAL_COUNT || num >= MAX_COUNT) {
+          // If stored value is invalid or past the max, reset to initial.
+          if (isNaN(num) || num >= MAX_COUNT) {
+            localStorage.setItem(FAKE_COUNTER_STORAGE_KEY, String(INITIAL_COUNT));
             return INITIAL_COUNT;
           }
           return num;
@@ -48,11 +49,12 @@ export default function RoundCounterPage() {
       } catch (error) {
         console.warn("Could not read from localStorage:", error);
       }
+      // If nothing is stored, start with the initial count.
+      localStorage.setItem(FAKE_COUNTER_STORAGE_KEY, String(INITIAL_COUNT));
       return INITIAL_COUNT;
     };
 
-    const initialCount = getInitialVisitorCount();
-    setVisitorCount(initialCount);
+    setVisitorCount(getInitialVisitorCount());
 
     const counterInterval = setInterval(() => {
       setVisitorCount(prevCount => {
@@ -61,7 +63,7 @@ export default function RoundCounterPage() {
         const newCount = prevCount + Math.floor(Math.random() * 3) + 1;
         
         if (newCount >= MAX_COUNT) {
-          try {
+           try {
             localStorage.setItem(FAKE_COUNTER_STORAGE_KEY, String(INITIAL_COUNT));
           } catch (error) {
             console.warn("Could not write to localStorage:", error);
