@@ -25,6 +25,7 @@ export default function RoundCounterPage() {
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const numericDesiredRounds = parseInt(desiredRounds, 10) || 0;
   const hasReachedGoal = totalRounds > 0 && totalRounds >= numericDesiredRounds;
@@ -34,7 +35,9 @@ export default function RoundCounterPage() {
     const updateCount = async () => {
       try {
         const count = await incrementVisitorCount();
-        setVisitorCount(count);
+        if (count > 0) {
+          setVisitorCount(count);
+        }
       } catch (error) {
         console.error("Failed to update visitor count:", error);
       }
