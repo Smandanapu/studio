@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Play, Repeat, Trophy, Timer, Hourglass, Users } from 'lucide-react';
 
 const FAKE_COUNTER_STORAGE_KEY = 'fakeVisitorCount';
-const INITIAL_COUNT = 101234;
+const INITIAL_COUNT = 100;
 const MAX_COUNT = 1000000;
 
 export default function RoundCounterPage() {
