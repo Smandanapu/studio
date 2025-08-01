@@ -263,7 +263,7 @@ export default function RoundCounterPage() {
       <Card className="w-full max-w-md shadow-2xl bg-card border-2">
         <CardHeader className="text-center">
           <CardTitle className="text-4xl font-headline text-primary">
-            "jAI Hanuman" Round Counter
+            "jAi  Hanuman" Round Counter
           </CardTitle>
           {roundDuration && (
             <CardDescription className="text-base pt-1">
