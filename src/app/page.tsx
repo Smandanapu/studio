@@ -75,10 +75,14 @@ export default function RoundCounterPage() {
             }
         };
 
-        audio.addEventListener('ended', playNext);
+        const handleEnded = () => {
+            playNext();
+            audio.removeEventListener('ended', handleEnded);
+        };
+        audio.addEventListener('ended', handleEnded);
         audio.play().catch(e => {
             console.error("Audio play failed", e);
-            audio.removeEventListener('ended', playNext);
+            audio.removeEventListener('ended', handleEnded);
         });
       };
 
@@ -252,6 +256,9 @@ export default function RoundCounterPage() {
         </CardContent>
         {renderFooter()}
       </Card>
+      <footer className="mt-8 text-center text-sm text-muted-foreground">
+        Developed by: Sateesh Mandanapu
+      </footer>
     </main>
   );
 }
