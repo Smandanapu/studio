@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'i.pinimg.com',
+        hostname: 'upload.wikimedia.org',
         port: '',
         pathname: '/**',
       }
@@ -27,3 +27,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+    

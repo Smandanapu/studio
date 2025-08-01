@@ -262,19 +262,18 @@ export default function RoundCounterPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 font-body">
       <Card className="w-full max-w-md shadow-2xl bg-card border-2">
-        <CardHeader className="text-center">
+        <CardHeader className="text-center items-center">
           <CardTitle className="text-4xl font-headline text-primary">
             "jAi  Hanuman" Round Counter
           </CardTitle>
-          <div className="relative mx-auto my-4 h-48 w-48">
-            <Image
-              src="https://i.pinimg.com/736x/ee/36/53/ee36537f687417770859a7448a335754.jpg"
-              alt="Lord Hanuman"
-              fill
-              className="rounded-md object-contain"
-              data-ai-hint="hanuman portrait"
-            />
-          </div>
+          <Image
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Hanuman_carrying_Dronagiri.jpg/800px-Hanuman_carrying_Dronagiri.jpg"
+            alt="Lord Hanuman"
+            width={192}
+            height={192}
+            className="rounded-md object-contain my-4"
+            data-ai-hint="hanuman portrait"
+          />
           {roundDuration && (
             <CardDescription className="text-base pt-1">
                 The counter will advance automatically.
@@ -298,3 +297,5 @@ export default function RoundCounterPage() {
     </main>
   );
 }
+
+    
