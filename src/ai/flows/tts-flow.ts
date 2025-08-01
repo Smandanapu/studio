@@ -66,14 +66,14 @@ const ttsFlow = ai.defineFlow(
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: {voiceName: 'Algenib'},
+            prebuiltVoiceConfig: {voiceName: 'Echo'},
           },
         },
       },
       prompt: query,
     });
     if (!media) {
-      throw new Error('no media returned');
+      throw new Error('Audio generation failed. No media was returned.');
     }
     const audioBuffer = Buffer.from(
       media.url.substring(media.url.indexOf(',') + 1),
