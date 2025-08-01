@@ -163,7 +163,7 @@ export default function RoundCounterPage() {
        <>
         <div className="text-center">
           <Label className="text-lg text-muted-foreground">
-            Total Rounds
+            Rounds Finished
           </Label>
           <p className="text-8xl font-bold text-primary tabular-nums">
             {totalRounds}
