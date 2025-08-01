@@ -23,25 +23,12 @@ export default function RoundCounterPage() {
   const [calibrationStartTime, setCalibrationStartTime] = useState<number | null>(null);
   const [roundDuration, setRoundDuration] = useState<number | null>(null);
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
+  const [hasIncremented, setHasIncremented] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const numericDesiredRounds = parseInt(desiredRounds, 10) || 0;
   const hasReachedGoal = totalRounds > 0 && totalRounds >= numericDesiredRounds;
-
-  useEffect(() => {
-    // Increment and fetch visitor count on initial load
-    const updateCount = async () => {
-      try {
-        const count = await incrementVisitorCount();
-        setVisitorCount(count);
-      } catch (error) {
-        console.error("Failed to update visitor count:", error);
-        setVisitorCount(0); // Set to 0 on error to show the icon
-      }
-    };
-    updateCount();
-  }, []);
 
   useEffect(() => {
     return () => {
@@ -81,7 +68,18 @@ export default function RoundCounterPage() {
     }
   }, [hasReachedGoal]);
 
-  const handleCalibration = () => {
+  const handleCalibration = async () => {
+    if (!hasIncremented) {
+      try {
+        const count = await incrementVisitorCount();
+        setVisitorCount(count);
+        setHasIncremented(true);
+      } catch (error) {
+        console.error("Failed to update visitor count:", error);
+        setVisitorCount(0); // Set to 0 on error to show the icon
+      }
+    }
+
     if (!isCalibrating) {
       // Start calibration
       // Unlock speech synthesis for mobile browsers by speaking a silent utterance on user gesture.
