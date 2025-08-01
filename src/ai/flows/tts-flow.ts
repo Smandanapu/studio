@@ -2,9 +2,12 @@
 /**
  * @fileOverview A Text-to-Speech (TTS) flow using Genkit.
  *
- * - textToSpeech - A function that converts text to speech audio.
- * - TextToSpeechInput - The input type for the textToSpeech function.
- * - TextToSpeechOutput - The return type for the textToSpeech function.
+ * This flow now includes instructions for saving the audio file locally to avoid API quota limits.
+ * 1. Run this flow once.
+ * 2. The base64-encoded WAV data will be printed to the console.
+ * 3. Decode the base64 string into a WAV file named "jai-hanuman.wav".
+ *    You can use an online base64 decoder or a script to do this.
+ * 4. Place the "jai-hanuman.wav" file in the "public" directory of your project.
  */
 
 import {ai} from '@/ai/genkit';
@@ -66,7 +69,7 @@ const ttsFlow = ai.defineFlow(
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: {voiceName: 'Algenib'},
+            prebuiltVoiceConfig: {voiceName: 'algenib'},
           },
         },
       },
@@ -80,6 +83,11 @@ const ttsFlow = ai.defineFlow(
       'base64'
     );
     const wavData = await toWav(audioBuffer);
+    
+    // Log the data for the user to save.
+    console.log('COPY THE FOLLOWING BASE64 DATA TO CREATE YOUR LOCAL .wav FILE:');
+    console.log(wavData);
+
     return {
       media: `data:audio/wav;base64,${wavData}`,
     };

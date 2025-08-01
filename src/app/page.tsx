@@ -13,15 +13,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Play, Repeat, Trophy, Timer, Hourglass, Loader2 } from 'lucide-react';
-import { textToSpeech } from '@/ai/flows/tts-flow';
-
 
 export default function RoundCounterPage() {
   const [totalRounds, setTotalRounds] = useState(0);
   const [desiredRounds, setDesiredRounds] = useState('10');
   const [isCounting, setIsCounting] = useState(false);
   const [isCalibrating, setIsCalibrating] = useState(false);
-  const [isPreparingAudio, setIsPreparingAudio] = useState(false);
   const [calibrationStartTime, setCalibrationStartTime] = useState<number | null>(null);
   const [roundDuration, setRoundDuration] = useState<number | null>(null);
   const [goalReachedAudio, setGoalReachedAudio] = useState<HTMLAudioElement | null>(null);
@@ -32,29 +29,10 @@ export default function RoundCounterPage() {
   const hasReachedGoal = totalRounds > 0 && totalRounds >= numericDesiredRounds;
 
   useEffect(() => {
-    // Pre-generate the audio when the component mounts.
-    // This prevents hitting API rate limits by only fetching the audio once.
-    const prepareAudio = async () => {
-      if (goalReachedAudio) return; // Don't fetch if we already have it
-      setIsPreparingAudio(true);
-      try {
-        const response = await textToSpeech("JAI Hanuman");
-        if (response && response.media) {
-          const audio = new Audio(response.media);
-          setGoalReachedAudio(audio);
-        } else {
-          console.error("Failed to generate audio or get media data.");
-        }
-      } catch (error) {
-        console.error("TTS flow failed:", error);
-      } finally {
-        setIsPreparingAudio(false);
-      }
-    };
-    
-    prepareAudio();
-  // We only want to run this once when the component mounts.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // We now use a local audio file to prevent hitting API rate limits.
+    // Place your "jai-hanuman.wav" file in the "public" directory of your project.
+    const audio = new Audio('/jai-hanuman.wav');
+    setGoalReachedAudio(audio);
   }, []);
 
   useEffect(() => {
@@ -221,7 +199,7 @@ export default function RoundCounterPage() {
           )
       }
 
-      const isStartDisabled = isCounting || hasReachedGoal || isPreparingAudio;
+      const isStartDisabled = isCounting || hasReachedGoal;
 
       return (
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
@@ -231,11 +209,7 @@ export default function RoundCounterPage() {
             size="lg"
             disabled={isStartDisabled}
           >
-            {isPreparingAudio ? (
-              <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Preparing...</>
-            ) : (
-              <><Play className="mr-2 h-5 w-5" /> Start Counting</>
-            )}
+            <Play className="mr-2 h-5 w-5" /> Start Counting
           </Button>
           <Button onClick={handleReset} variant="outline" size="lg" className="w-full sm:w-48">
             <Repeat className="mr-2 h-5 w-5" /> Reset
