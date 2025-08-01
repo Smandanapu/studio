@@ -13,7 +13,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Play, Repeat, Trophy, Timer, Hourglass } from 'lucide-react';
-import * as Tone from 'tone';
+import { textToSpeech } from '@/ai/flows/tts-flow';
+
 
 export default function RoundCounterPage() {
   const [totalRounds, setTotalRounds] = useState(0);
@@ -22,19 +23,14 @@ export default function RoundCounterPage() {
   const [isCalibrating, setIsCalibrating] = useState(false);
   const [calibrationStartTime, setCalibrationStartTime] = useState<number | null>(null);
   const [roundDuration, setRoundDuration] = useState<number | null>(null);
-  
-  const synth = useRef<Tone.Synth | null>(null);
+  const [goalReachedAudio, setGoalReachedAudio] = useState<HTMLAudioElement | null>(null);
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const numericDesiredRounds = parseInt(desiredRounds, 10) || 0;
   const hasReachedGoal = totalRounds > 0 && totalRounds >= numericDesiredRounds;
 
   useEffect(() => {
-    // Initialize the synthesizer once on the client-side
-    if (!synth.current) {
-      synth.current = new Tone.Synth().toDestination();
-    }
-
     return () => {
       // Cleanup interval on unmount
       if (intervalRef.current) {
@@ -64,11 +60,17 @@ export default function RoundCounterPage() {
   useEffect(() => {
     if (hasReachedGoal) {
       setIsCounting(false);
-      if (synth.current) {
-        synth.current.triggerAttackRelease("C5", "8n", Tone.now());
+      if (goalReachedAudio) {
+        goalReachedAudio.play();
+      } else {
+        textToSpeech("JAI Hanuman").then(response => {
+           const audio = new Audio(response.media);
+           setGoalReachedAudio(audio);
+           audio.play();
+        });
       }
     }
-  }, [totalRounds, numericDesiredRounds, hasReachedGoal]);
+  }, [totalRounds, numericDesiredRounds, hasReachedGoal, goalReachedAudio]);
 
   const handleCalibration = () => {
     if (!isCalibrating) {
