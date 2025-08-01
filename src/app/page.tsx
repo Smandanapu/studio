@@ -111,6 +111,7 @@ export default function RoundCounterPage() {
       if (calibrationStartTime) {
         const duration = Date.now() - calibrationStartTime;
         setRoundDuration(duration + 10000);
+        setTotalRounds(1);
       }
       setIsCalibrating(false);
       setCalibrationStartTime(null);
