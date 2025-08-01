@@ -166,9 +166,9 @@ export default function RoundCounterPage() {
         {hasReachedGoal && !isCounting && (
           <div className="flex animate-in fade-in-50 items-center gap-3 rounded-lg border-2 border-accent bg-accent/10 p-4 text-accent">
             <Trophy className="h-8 w-8" />
-            <div className="flex flex-col">
-              <p className="font-bold text-lg">Goal Reached!</p>
-              <p className="text-sm">Great work! You can reset to start a new session.</p>
+            <div className="flex flex-col text-center">
+              <p className="text-sm">“Tvamasmin Kārya Niryoge Pramānam Hari Sattama Hanuman Yatna Māsthāya Dukha Kshaya Karo Bhava”</p>
+              <p className="text-sm mt-2">“Tvamasmin Kārya Niryoge Pramānam Hari Sattama Rāghavastvatsamārambhāt Mayi Yatnaparo Bhavet”</p>
             </div>
           </div>
         )}
