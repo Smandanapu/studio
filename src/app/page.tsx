@@ -68,6 +68,12 @@ export default function RoundCounterPage() {
   const handleCalibration = () => {
     if (!isCalibrating) {
       // Start calibration
+      // Unlock speech synthesis for mobile browsers by speaking a silent utterance on user gesture.
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        const silentUtterance = new SpeechSynthesisUtterance('');
+        silentUtterance.volume = 0;
+        window.speechSynthesis.speak(silentUtterance);
+      }
       setIsCalibrating(true);
       setCalibrationStartTime(Date.now());
     } else {
