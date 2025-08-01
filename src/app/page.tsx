@@ -13,6 +13,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Play, Repeat, Trophy, Timer, Hourglass, Loader2 } from 'lucide-react';
+import { textToSpeech } from '@/ai/flows/tts-flow';
+import { useToast } from '@/hooks/use-toast';
 
 export default function RoundCounterPage() {
   const [totalRounds, setTotalRounds] = useState(0);
@@ -22,17 +24,40 @@ export default function RoundCounterPage() {
   const [calibrationStartTime, setCalibrationStartTime] = useState<number | null>(null);
   const [roundDuration, setRoundDuration] = useState<number | null>(null);
   const [goalReachedAudio, setGoalReachedAudio] = useState<HTMLAudioElement | null>(null);
+  const [isAudioLoading, setIsAudioLoading] = useState(true);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { toast } = useToast();
 
   const numericDesiredRounds = parseInt(desiredRounds, 10) || 0;
   const hasReachedGoal = totalRounds > 0 && totalRounds >= numericDesiredRounds;
 
   useEffect(() => {
-    // We now use a local audio file to prevent hitting API rate limits.
-    // Place your "jai-hanuman.wav" file in the "public" directory of your project.
-    const audio = new Audio('/jai-hanuman.wav');
-    setGoalReachedAudio(audio);
+    // Generate the audio once on initial load and store it in state.
+    const getAudio = async () => {
+      try {
+        setIsAudioLoading(true);
+        const response = await textToSpeech("JAI Hanuman");
+        if (response.media) {
+          const audio = new Audio(response.media);
+          setGoalReachedAudio(audio);
+        } else {
+           throw new Error('Audio generation failed.');
+        }
+      } catch (error) {
+        console.error("Failed to generate TTS audio:", error);
+        toast({
+          title: "Audio Error",
+          description: "Could not load the goal notification sound. You may have exceeded the API quota.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsAudioLoading(false);
+      }
+    };
+
+    getAudio();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -123,6 +148,17 @@ export default function RoundCounterPage() {
   };
 
   const renderContent = () => {
+     if (isAudioLoading) {
+      return (
+        <div className="flex flex-col items-center justify-center text-center">
+            <Loader2 className="mr-2 h-8 w-8 animate-spin" />
+            <CardDescription className="text-base pt-4">
+              Loading audio...
+            </CardDescription>
+        </div>
+      );
+    }
+
     if (roundDuration === null) {
       return (
         <div className="text-center">
@@ -189,7 +225,7 @@ export default function RoundCounterPage() {
   }
 
   const renderFooter = () => {
-      if (roundDuration === null) {
+      if (roundDuration === null || isAudioLoading) {
           return (
               <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
                  <Button onClick={handleReset} variant="outline" size="lg" className="w-full sm:w-48">
