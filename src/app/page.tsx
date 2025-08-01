@@ -280,7 +280,7 @@ export default function RoundCounterPage() {
         Developed by: Sateesh Mandanapu
       </footer>
       {visitorCount !== null && (
-        <div className="fixed bottom-4 left-4 flex items-center gap-2 rounded-full bg-card/80 backdrop-blur-sm p-2 pr-4 border shadow-lg">
+        <div className="fixed bottom-4 right-4 flex items-center gap-2 rounded-full bg-card/80 backdrop-blur-sm p-2 pr-4 border shadow-lg">
           <Users className="h-5 w-5 text-primary" />
           <p className="text-sm font-medium text-primary">{visitorCount.toLocaleString()}</p>
         </div>
