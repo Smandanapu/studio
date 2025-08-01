@@ -79,7 +79,7 @@ export default function RoundCounterPage() {
       // Stop calibration
       if (calibrationStartTime) {
         const duration = Date.now() - calibrationStartTime;
-        setRoundDuration(duration);
+        setRoundDuration(duration + 10000);
       }
       setIsCalibrating(false);
       setCalibrationStartTime(null);
@@ -155,7 +155,7 @@ export default function RoundCounterPage() {
         
         {roundDuration && (
             <p className="text-sm text-muted-foreground">
-                Calibrated round time: {(roundDuration / 1000).toFixed(2)} seconds.
+                Calibrated round time (plus 10s): {(roundDuration / 1000).toFixed(2)} seconds.
             </p>
         )}
 
