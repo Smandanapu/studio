@@ -64,11 +64,15 @@ export default function RoundCounterPage() {
       const playAudioRepeatedly = (audio: HTMLAudioElement, times: number) => {
         if (times <= 0) return;
         
+        let playedCount = 0;
         const playNext = () => {
-          if (times > 1) {
-            audio.removeEventListener('ended', playNext);
-            playAudioRepeatedly(audio, times - 1);
-          }
+            playedCount++;
+            if (playedCount < times) {
+                audio.currentTime = 0;
+                audio.play().catch(e => {
+                    console.error("Audio play failed", e);
+                });
+            }
         };
 
         audio.addEventListener('ended', playNext);
@@ -82,9 +86,15 @@ export default function RoundCounterPage() {
         playAudioRepeatedly(goalReachedAudio, 3);
       } else {
         textToSpeech("JAI Hanuman").then(response => {
-           const audio = new Audio(response.media);
-           setGoalReachedAudio(audio);
-           playAudioRepeatedly(audio, 3);
+           if (response && response.media) {
+             const audio = new Audio(response.media);
+             setGoalReachedAudio(audio);
+             playAudioRepeatedly(audio, 3);
+           } else {
+             console.error("Failed to generate audio or get media data.");
+           }
+        }).catch(error => {
+          console.error("TTS flow failed:", error);
         });
       }
     }
@@ -178,7 +188,7 @@ export default function RoundCounterPage() {
         
         {roundDuration && (
             <p className="text-sm text-muted-foreground">
-                Calibrated round time (plus 10s): {(roundDuration / 1000).toFixed(2)} seconds.
+                your devotional time for each round: {(roundDuration / 1000).toFixed(2)} seconds.
             </p>
         )}
 
