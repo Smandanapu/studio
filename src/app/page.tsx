@@ -12,7 +12,8 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Play, Repeat, Trophy, Timer, Hourglass } from 'lucide-react';
+import { Play, Repeat, Trophy, Timer, Hourglass, Users } from 'lucide-react';
+import { incrementVisitorCount } from '@/services/visitorService';
 
 export default function RoundCounterPage() {
   const [totalRounds, setTotalRounds] = useState(0);
@@ -21,11 +22,25 @@ export default function RoundCounterPage() {
   const [isCalibrating, setIsCalibrating] = useState(false);
   const [calibrationStartTime, setCalibrationStartTime] = useState<number | null>(null);
   const [roundDuration, setRoundDuration] = useState<number | null>(null);
+  const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const numericDesiredRounds = parseInt(desiredRounds, 10) || 0;
   const hasReachedGoal = totalRounds > 0 && totalRounds >= numericDesiredRounds;
+
+  useEffect(() => {
+    // Increment and fetch visitor count on initial load
+    const updateCount = async () => {
+      try {
+        const count = await incrementVisitorCount();
+        setVisitorCount(count);
+      } catch (error) {
+        console.error("Failed to update visitor count:", error);
+      }
+    };
+    updateCount();
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -227,6 +242,12 @@ export default function RoundCounterPage() {
       <footer className="mt-8 text-center text-sm text-muted-foreground">
         Developed by: Sateesh Mandanapu
       </footer>
+      {visitorCount !== null && (
+        <div className="fixed bottom-4 right-4 flex items-center gap-2 rounded-full bg-card/80 backdrop-blur-sm p-2 pr-4 border shadow-lg">
+          <Users className="h-5 w-5 text-primary" />
+          <p className="text-sm font-medium text-primary">{visitorCount.toLocaleString()}</p>
+        </div>
+      )}
     </main>
   );
 }
