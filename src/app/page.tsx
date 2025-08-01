@@ -40,7 +40,7 @@ export default function RoundCounterPage() {
         if (storedCount) {
           const num = parseInt(storedCount, 10);
           // If the stored number is somehow less than the initial count or past the max, reset it.
-          if (num < INITIAL_COUNT || num >= MAX_COUNT) {
+          if (isNaN(num) || num < INITIAL_COUNT || num >= MAX_COUNT) {
             return INITIAL_COUNT;
           }
           return num;
