@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Round Counter',
+  title: '"jAI Hanuman" Round Counter',
   description: 'A simple application to count your rounds, sets, or laps.',
 };
 

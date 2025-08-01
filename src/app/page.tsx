@@ -115,7 +115,7 @@ export default function RoundCounterPage() {
             <CardDescription className="text-base pt-1 mb-4">
               {isCalibrating
                 ? 'Perform one round, then click Stop to set your pace.'
-                : 'First, let\'s calibrate by timing one round.'}
+                : "First, let's calibrate by timing one round."}
             </CardDescription>
             <Button onClick={handleCalibration} size="lg" className="w-full sm:w-48">
               {isCalibrating ? (
@@ -207,7 +207,7 @@ export default function RoundCounterPage() {
       <Card className="w-full max-w-md shadow-2xl bg-card border-2">
         <CardHeader className="text-center">
           <CardTitle className="text-4xl font-headline text-primary">
-            Round Counter
+            "jAI Hanuman" Round Counter
           </CardTitle>
           {roundDuration && (
             <CardDescription className="text-base pt-1">
