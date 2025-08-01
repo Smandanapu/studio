@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -40,7 +41,7 @@ export default function RoundCounterPage() {
         if (storedCount) {
           const num = parseInt(storedCount, 10);
           // If stored value is invalid or past the max, reset to initial.
-          if (isNaN(num) || num >= MAX_COUNT) {
+          if (isNaN(num) || num >= MAX_COUNT || num < INITIAL_COUNT) {
             localStorage.setItem(FAKE_COUNTER_STORAGE_KEY, String(INITIAL_COUNT));
             return INITIAL_COUNT;
           }
@@ -265,6 +266,16 @@ export default function RoundCounterPage() {
           <CardTitle className="text-4xl font-headline text-primary">
             "jAi  Hanuman" Round Counter
           </CardTitle>
+          <div className="relative w-full h-48 my-4">
+            <Image
+              src="https://i.pinimg.com/736x/ee/36/53/ee36537f687417770859a7448a335754.jpg"
+              alt="Lord Hanuman"
+              layout="fill"
+              objectFit="contain"
+              className="rounded-md"
+              data-ai-hint="hanuman portrait"
+            />
+          </div>
           {roundDuration && (
             <CardDescription className="text-base pt-1">
                 The counter will advance automatically.
