@@ -13,7 +13,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Play, Repeat, Trophy, Timer, Hourglass, Users } from 'lucide-react';
-import { incrementVisitorCount } from '@/services/visitorService';
+
+const FAKE_COUNTER_STORAGE_KEY = 'fakeVisitorCount';
+const INITIAL_COUNT = 101234;
+const MAX_COUNT = 1000000;
 
 export default function RoundCounterPage() {
   const [totalRounds, setTotalRounds] = useState(0);
@@ -23,7 +26,6 @@ export default function RoundCounterPage() {
   const [calibrationStartTime, setCalibrationStartTime] = useState<number | null>(null);
   const [roundDuration, setRoundDuration] = useState<number | null>(null);
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
-  const [hasIncremented, setHasIncremented] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -31,8 +33,49 @@ export default function RoundCounterPage() {
   const hasReachedGoal = totalRounds > 0 && totalRounds >= numericDesiredRounds;
 
   useEffect(() => {
+    // Initialize and update the fake visitor counter
+    const getInitialVisitorCount = () => {
+      try {
+        const storedCount = localStorage.getItem(FAKE_COUNTER_STORAGE_KEY);
+        if (storedCount) {
+          const num = parseInt(storedCount, 10);
+          return num >= MAX_COUNT ? INITIAL_COUNT : num;
+        }
+      } catch (error) {
+        console.warn("Could not read from localStorage:", error);
+      }
+      return INITIAL_COUNT;
+    };
+
+    const initialCount = getInitialVisitorCount();
+    setVisitorCount(initialCount);
+
+    const counterInterval = setInterval(() => {
+      setVisitorCount(prevCount => {
+        if (prevCount === null) return INITIAL_COUNT;
+        
+        const newCount = prevCount + Math.floor(Math.random() * 3) + 1;
+        
+        if (newCount >= MAX_COUNT) {
+          try {
+            localStorage.setItem(FAKE_COUNTER_STORAGE_KEY, String(INITIAL_COUNT));
+          } catch (error) {
+            console.warn("Could not write to localStorage:", error);
+          }
+          return INITIAL_COUNT;
+        }
+        
+        try {
+          localStorage.setItem(FAKE_COUNTER_STORAGE_KEY, String(newCount));
+        } catch (error) {
+          console.warn("Could not write to localStorage:", error);
+        }
+        return newCount;
+      });
+    }, 5000); // Increment every 5 seconds
+
     return () => {
-      // Cleanup interval on unmount
+      clearInterval(counterInterval);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
@@ -69,17 +112,6 @@ export default function RoundCounterPage() {
   }, [hasReachedGoal]);
 
   const handleCalibration = async () => {
-    if (!hasIncremented) {
-      try {
-        const count = await incrementVisitorCount();
-        setVisitorCount(count);
-        setHasIncremented(true);
-      } catch (error) {
-        console.error("Failed to update visitor count:", error);
-        setVisitorCount(0); // Set to 0 on error to show the icon
-      }
-    }
-
     if (!isCalibrating) {
       // Start calibration
       // Unlock speech synthesis for mobile browsers by speaking a silent utterance on user gesture.
