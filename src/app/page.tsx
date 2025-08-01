@@ -60,17 +60,36 @@ export default function RoundCounterPage() {
   useEffect(() => {
     if (hasReachedGoal) {
       setIsCounting(false);
+      
+      const playAudioRepeatedly = (audio: HTMLAudioElement, times: number) => {
+        if (times <= 0) return;
+        
+        const playNext = () => {
+          if (times > 1) {
+            audio.removeEventListener('ended', playNext);
+            playAudioRepeatedly(audio, times - 1);
+          }
+        };
+
+        audio.addEventListener('ended', playNext);
+        audio.play().catch(e => {
+            console.error("Audio play failed", e);
+            audio.removeEventListener('ended', playNext);
+        });
+      };
+
       if (goalReachedAudio) {
-        goalReachedAudio.play();
+        playAudioRepeatedly(goalReachedAudio, 3);
       } else {
         textToSpeech("JAI Hanuman").then(response => {
            const audio = new Audio(response.media);
            setGoalReachedAudio(audio);
-           audio.play();
+           playAudioRepeatedly(audio, 3);
         });
       }
     }
-  }, [totalRounds, numericDesiredRounds, hasReachedGoal, goalReachedAudio]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasReachedGoal]);
 
   const handleCalibration = () => {
     if (!isCalibrating) {
