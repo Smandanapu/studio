@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -266,14 +265,6 @@ export default function RoundCounterPage() {
           <CardTitle className="text-4xl font-headline text-primary">
             "jAi  Hanuman" Round Counter
           </CardTitle>
-          <Image
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Hanuman_carrying_Dronagiri.jpg/800px-Hanuman_carrying_Dronagiri.jpg"
-            alt="Lord Hanuman"
-            width={192}
-            height={192}
-            className="rounded-md object-contain my-4"
-            data-ai-hint="hanuman portrait"
-          />
           {roundDuration && (
             <CardDescription className="text-base pt-1">
                 The counter will advance automatically.
@@ -297,5 +288,3 @@ export default function RoundCounterPage() {
     </main>
   );
 }
-
-    
